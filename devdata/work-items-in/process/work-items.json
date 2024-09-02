@@ -1,0 +1,12 @@
+[
+  {
+      "payload": {
+         "message": "Gen AI!",
+         "topic": "tech",
+         "time:": "3"
+      },
+      "files": {
+          "orders.xlsx": "orders.xlsx"
+      }
+  }
+]
