@@ -231,7 +231,6 @@ class NewsProcessor:
                 main_content = WebDriverWait(self.driver, 20).until(
                     EC.visibility_of_element_located((By.ID, 'main-content'))
                 )
-                logger.info(f"Main content text: {main_content.text[:100]}...")
                 if "No search results match" in main_content.text:
                     logger.info("No search results found. Stopping the process.")
                     break
@@ -280,7 +279,6 @@ class NewsProcessor:
 
             except (NoSuchElementException, TimeoutException) as e:
                 logger.error(f"Error processing page with offset {offset}: {str(e)}")
-                logger.error(f"Current page source: {self.driver.page_source[:5000]}...")
                 break
 
         logger.info(f"Finished iterating over pages. Total news items in report: {len(self.report)}")
@@ -332,10 +330,11 @@ class NewsProcessor:
 
             current_date = datetime.now().strftime("%Y%m%d_%H%M%S%f")
 
-            image_folder = f"Pictures_{self.search_phrase}_{self.section}_{self.date_range}_{current_date}"
-            image_folder_path = os.path.join(output_folder, image_folder)
-            os.makedirs(image_folder_path, exist_ok=True)
-            image_folder_full_path = os.path.abspath(image_folder_path)
+            # image_folder = f"Pictures_{self.search_phrase}_{self.section}_{self.date_range}_{current_date}"
+            # image_folder_path = os.path.join(output_folder, image_folder)
+            # os.makedirs(image_folder_path, exist_ok=True)
+            # image_folder_full_path = os.path.abspath(image_folder_path)
+            image_folder_full_path = os.path.abspath(output_folder)
             
             data = []
             for news in self.report:
