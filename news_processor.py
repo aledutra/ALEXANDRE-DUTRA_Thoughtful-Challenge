@@ -228,9 +228,10 @@ class NewsProcessor:
 
             try:
                 logger.info("Checking for 'No search results' message...")
-                main_content = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.ID, 'main-content'))
+                main_content = WebDriverWait(self.driver, 20).until(
+                    EC.visibility_of_element_located((By.ID, 'main-content'))
                 )
+                logger.info(f"Main content text: {main_content.text[:100]}...")
                 if "No search results match" in main_content.text:
                     logger.info("No search results found. Stopping the process.")
                     break
@@ -279,6 +280,7 @@ class NewsProcessor:
 
             except (NoSuchElementException, TimeoutException) as e:
                 logger.error(f"Error processing page with offset {offset}: {str(e)}")
+                logger.error(f"Current page source: {self.driver.page_source[:5000]}...")
                 break
 
         logger.info(f"Finished iterating over pages. Total news items in report: {len(self.report)}")
