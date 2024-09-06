@@ -1,23 +1,46 @@
-from robocorp.tasks import task
 import logging
-# from robocorp import workitems
-from RPA.Robocorp.WorkItems import WorkItems
+from robocorp import workitems
+from robocorp.tasks import task
+from RPA.core.webdriver import download, start
+from news_processor import NewsProcessor
+from custom_selenium import CustomSelenium
+
+# Configure the Logger
+logger = logging.getLogger(__name__)
+FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(level=logging.INFO,format=FORMAT)
+
+
 @task
 def minimal_task():
-    message = "Hello"
-    message = message + " aaaaaaaaaaaaaaaaaaaaaaaa!"
-    # item = workitems.inputs
-    # print("Received payload:", item.payload)
-    # workitems.outputs.create(payload={"key": "value"})
-    
-    # for item in workitems.inputs:
-    #     print("Received payload:", item.payload)
-    #     workitems.outputs.create(payload={"key": "value"})
+    logger.info('Starting automation...')
 
-    library = WorkItems()
-    library.get_input_work_item()
+    # define driver connection
+    logger.info('Defining web driver.')
+    selenium = CustomSelenium()
+    selenium.set_webdriver()
 
-    variables = library.get_work_item_variables()
-    for variable, value in variables.items():
-        logging.info("%s = %s", variable, value)
-        print("%s = %s", variable, value)
+
+    # Get work items
+    logger.info('Getting work items to process.')
+    for item in workitems.inputs:
+        try:
+            search_phrase = item.payload['search_phrase']
+            section = item.payload['section']
+            date_range = int(float(item.payload['date_range']))
+            logger.info(f"Received work item - Search Phrase: {search_phrase},Section: {section},Date range: {date_range}")
+            
+            processor = NewsProcessor(selenium.driver, search_phrase, section, date_range)
+            status = processor.process()            
+            if 'Failed' in status:
+                raise Exception('Exception during news extraction.')
+            
+            item.done()
+
+        except KeyError as err:
+            item.fail("APPLICATION", code="MISSING_FIELD", message=str(err))
+            logger.exception(f"MISSING_FIELD - {str(err)}.")
+        except Exception as exc:
+            item.fail("APPLICATION", code="SYSTEM_EXCEPTION", message=str(exc))
+            logger.error(f"SYSTEM EXCEPTION - {str(exc)}.")
+            
