@@ -1,43 +1,133 @@
 from RPA.core.webdriver import download, start
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import logging
+import random
+from xvfbwrapper import Xvfb
 
 class CustomSelenium:
 
     def __init__(self):
         self.driver = None
         self.logger = logging.getLogger(__name__)
+        self.vdisplay = None
+
+    def start_virtual_display(self):
+        self.vdisplay = Xvfb(width=1920, height=1080)
+        self.vdisplay.start()
+        self.logger.info("Virtual display started")
+
+    def stop_virtual_display(self):
+        if self.vdisplay:
+            self.vdisplay.stop()
+            self.logger.info("Virtual display stopped")
 
     def set_chrome_options(self):
-        options = webdriver.ChromeOptions()
+        options = Options()
         options.add_argument('--no-sandbox')
-        options.add_argument('--window-size=1420,1080')
-        options.add_argument('--headless')
-        options.add_argument("--disable-gpu")
-        options.add_argument('--disable-software-rasterizer')
-        options.add_argument('--disable-webgpu')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument("--disable-extensions")
-        options.add_argument('--disable-web-security')
+        options.add_argument('--disable-gpu')
         options.add_argument('--disable-blink-features=AutomationControlled')
-        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36')
-
-        # options.add_argument("--start-maximized")
-        # options.add_argument('--remote-debugging-port=9222')
-        options.add_experimental_option("excludeSwitches", ["enable-logging"])
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        options.add_argument(f'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36')
         return options
 
     def set_webdriver(self, browser="Chrome"):
+        self.start_virtual_display()
         options = self.set_chrome_options()
-        executable_driver_path = ''
-        if not executable_driver_path:
-            executable_driver_path = download(browser)
-            message = executable_driver_path
-            self.logger.warning("Using downloaded driver: %s" % executable_driver_path)
-        else:
-            self.logger.warning("Using cached driver: %s" % executable_driver_path)
+        executable_driver_path = download(browser)
+        self.logger.warning(f"Using downloaded driver: {executable_driver_path}")
 
         self.driver = start("Chrome", options=options)
+
+        self.driver.execute_script("""
+        Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+        });
+        """)
+    '''
+    def __init__(self):
+        self.driver = None
+        self.logger = logging.getLogger(__name__)
+
+    def set_chrome_options(self, headless=True):
+        options = Options()
+        
+        # Basic options
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument("--disable-extensions")
+        options.add_argument('--disable-gpu')
+        
+        # Improved fingerprinting
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        
+        # Random window size
+        window_width = random.randint(1050, 1200)
+        window_height = random.randint(800, 950)
+        options.add_argument(f'--window-size={window_width},{window_height}')
+        
+        # Use a common user agent
+        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36')
+
+        if headless:
+            options.add_argument('--headless')
+
+        return options
+
+    def set_webdriver(self, browser="Chrome", headless=True):
+        options = self.set_chrome_options(headless)
+        executable_driver_path = download(browser)
+        self.logger.warning(f"Using downloaded driver: {executable_driver_path}")
+
+        self.driver = start("Chrome", options=options)
+
+        # Additional JavaScript to modify navigator properties
+        self.driver.execute_script("""
+        Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+        });
+        """)
+
+        # Set random viewport size
+        viewport_width = random.randint(800, 1000)
+        viewport_height = random.randint(600, 800)
+        self.driver.execute_script(f"window.outerWidth = {viewport_width}; window.outerHeight = {viewport_height};")
+    '''    
+    # def set_chrome_options(self):
+    #     options = webdriver.ChromeOptions()
+    #     options.add_argument('--no-sandbox')
+    #     options.add_argument('--window-size=1420,1080')
+    #     # options.add_argument('--headless')
+    #     options.add_argument("--disable-gpu")
+    #     options.add_argument('--disable-software-rasterizer')
+    #     options.add_argument('--disable-webgpu')
+    #     options.add_argument('--disable-dev-shm-usage')
+    #     options.add_argument("--disable-extensions")
+    #     options.add_argument('--disable-web-security')
+    #     options.add_argument('--disable-blink-features=AutomationControlled')
+    #     # options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36')
+
+    #     # options.add_argument("--start-maximized")
+    #     # options.add_argument('--remote-debugging-port=9222')
+    #     options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    #     return options
+
+    # def set_webdriver(self, browser="Chrome"):
+    #     options = self.set_chrome_options()
+    #     executable_driver_path = ''
+    #     if not executable_driver_path:
+    #         executable_driver_path = download(browser)
+    #         message = executable_driver_path
+    #         self.logger.warning("Using downloaded driver: %s" % executable_driver_path)
+    #     else:
+    #         self.logger.warning("Using cached driver: %s" % executable_driver_path)
+
+    #     self.driver = start("Chrome", options=options)
 
     def set_page_size(self, width:int, height:int):
         #Extract the current window size from the driver
