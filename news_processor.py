@@ -362,7 +362,7 @@ class NewsProcessor:
                 # Wait for download to complete (max 10 seconds)
                 for _ in range(10):
                     if list(glob.iglob(download_path)):
-                        logger.info(f"Image {news.image_name} saved.")
+                        logger.info(f"Image {os.path.basename(download_path)} saved.")
                         break
                     time.sleep(1)
                 else:
