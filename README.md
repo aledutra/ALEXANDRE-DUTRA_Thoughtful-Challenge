@@ -19,19 +19,20 @@ This project is an automated news scraper built as part of the Thoughtful RPA Co
 
 - Python 3.8+
 - Custom Selenium WebDriver
-- pandas for data manipulation and Excel file creation (included in the Conda environment)
+- Pandas for data manipulation and Excel file creation (included in the Conda environment)
+- Pre-commit for PEP8 standardization
 
 ## Project Structure
 
 - `tasks.py`: Main entry point for the RPA process
 - `news_processor.py`: Core logic for news processing and data extraction
-- `custom_selenium.py`: Custom wrapper around Selenium
+- `custom_selenium.py`: Custom wrapper for Selenium
 
 ## Setup and Installation
 
 1. Clone this repository inside a robocorp project
 2. Create the work items in requested structure
-3. The project uses a Conda environment configuration, which includes all necessary dependencies including pandas. No additional installation of packages is required.
+3. The project uses a Conda environment configuration, which includes all necessary dependencies including pandas. No additional installation of packages is required
 
 
 ## Usage
@@ -49,7 +50,7 @@ The script is designed to be run as a Robocorp Control Room process. It expects 
 The script generates two types of output:
 
 1. An Excel file named `NewsReport_{search_phrase}_{section}_{date_range}_{timestamp}.xlsx` containing the extracted data
-2. Image files saved directly in the root directory, with filenames stored on the excel report.
+2. Image files with filenames stored on the excel report.
 
 ## Logging
 
