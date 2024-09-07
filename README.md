@@ -33,20 +33,23 @@ This project is an automated news scraper built as part of the Thoughtful RPA Co
 2. Create the work items in requested structure
 3. The project uses a Conda environment configuration, which includes all necessary dependencies including pandas. No additional installation of packages is required.
 
+
 ## Usage
 
 The script is designed to be run as a Robocorp Control Room process. It expects the following parameters to be provided via a Robocloud work item:
 
-- `search_phrase`: The phrase to search for in news articles
-- `section`: The news category/section to filter (use 'all' for no filtering)
-- `date_range`: Number of months to look back for news (0 or 1 for current month only)
+| Key            | Description                                                                                                                                                    |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `search_phrase`| The phrase to search for in news articles                                                                                                                       |
+| `section`      | The news category/section to filter. Valid options: `all`, `world`, `business`, `legal`, `markets`, `breakingviews`, `technology`, `sustainability`, `science`, `sports`, `lifestyle`. If not specified or invalid, defaults to `all`. |
+| `date_range`   | Number of months to look back for news (0 or 1 for current month only)                                                                                          |
 
 ## Output
 
-The script generates two types of output in the `/output` directory:
+The script generates two types of output:
 
 1. An Excel file named `NewsReport_{search_phrase}_{section}_{date_range}_{timestamp}.xlsx` containing the extracted data
-2. A folder named `Pictures_{search_phrase}_{section}_{date_range}_{timestamp}` containing the downloaded images
+2. Image files saved directly in the root directory, with filenames stored on the excel report.
 
 ## Logging
 

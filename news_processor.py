@@ -262,7 +262,6 @@ class NewsProcessor:
             self.driver.get(url)
 
             try:
-                logger.info("Checking for 'No search results' message...")
                 main_content = WebDriverWait(self.driver, 20).until(
                     EC.visibility_of_element_located((By.ID, "main-content"))
                 )
