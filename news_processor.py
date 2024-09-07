@@ -327,13 +327,7 @@ class NewsProcessor:
         try:
             output_folder = "output"
             os.makedirs(output_folder, exist_ok=True)
-
             current_date = datetime.now().strftime("%Y%m%d_%H%M%S%f")
-
-            # image_folder = f"Pictures_{self.search_phrase}_{self.section}_{self.date_range}_{current_date}"
-            # image_folder_path = os.path.join(output_folder, image_folder)
-            # os.makedirs(image_folder_path, exist_ok=True)
-            # image_folder_full_path = os.path.abspath(image_folder_path)
             image_folder_full_path = os.path.abspath(output_folder)
             
             data = []
@@ -347,7 +341,7 @@ class NewsProcessor:
                     "date": news.date,
                     "picture_filename": image_filename,
                     "search_phrase_count": news.count_phrase,
-                    "contains_money": news.contain_money
+                    "contains_money": str(news.contain_money)
                 })
 
             df = pd.DataFrame(data)

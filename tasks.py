@@ -14,8 +14,6 @@ logging.basicConfig(level=logging.INFO,format=FORMAT)
 @task
 def minimal_task():
     logger.info('Starting automation...')
-    
-    logger.info('Starting display.')
 
     # define driver connection
     logger.info('Defining web driver.')
